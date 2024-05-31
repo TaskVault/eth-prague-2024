@@ -22,17 +22,17 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {
-      forking: {
-        url: ENV.MAINET_URL,
-        blockNumber: 13000000,
-      },
+      // forking: {
+      //   url: ENV.MAINET_URL,
+      //   blockNumber: 13000000,
+      // },
     },
-    mumbai: {
-      url: ENV.MUMBAI_URL,
-      accounts: {
-        mnemonic: ENV.DEPLOYER_MNEMONIC,
-      },
-    },
+    // mumbai: {
+    //   url: ENV.MUMBAI_URL,
+    //   accounts: {
+    //     mnemonic: ENV.DEPLOYER_MNEMONIC,
+    //   },
+    // },
   },
 };
 

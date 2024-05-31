@@ -1,7 +1,6 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import { parseEther } from "viem";
 
-const INIT_SUPPLY = parseEther("1_000_000_000");
+const INIT_SUPPLY = 1_000_000_000;
 
 const CarbonCreditTokenModule = buildModule("CarbonCreditTokenModule", (m) => {
 

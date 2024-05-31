@@ -1,13 +1,13 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import { parseEther } from "viem";
 
-const INIT_SUPPLY = parseEther("1_000_000_000");
+const INIT_SUPPLY = 1_000_000_000;
 
-const CarbonCreditTokenModule = buildModule("CarbonCreditTokenModule", (m) => {
+const MemeCCRTokenModule = buildModule("MemeCCRTokenModule", (m) => {
 
-  const CCRToken = m.contract("CarbonCreditToken", [INIT_SUPPLY]);
+  const MemeCCRToken = m.contract("MemeCCRToken", [INIT_SUPPLY]);
 
-  return { CCRToken };
+  return { MemeCCRToken };
 });
 
-export default CarbonCreditTokenModule;
+export default MemeCCRTokenModule;
