@@ -1,0 +1,24 @@
+{
+  "id": "d8c4ab6c-3056-4626-857d-e8c1492f46a0",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "6",
+  "dialect": "postgresql",
+  "tables": {
+    "public.table": {
+      "name": "table",
+      "schema": "",
+      "columns": {},
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
