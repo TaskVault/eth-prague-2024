@@ -11,7 +11,7 @@ app.doc("/doc", {
   openapi: "3.0.0",
   info: {
     version: "1.0.0",
-    title: "api1",
+    title: "api",
   },
 });
 app.get("/ui", swaggerUI({ url: "/doc" }));

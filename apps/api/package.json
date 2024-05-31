@@ -9,18 +9,19 @@
     "db:clean": "ts-node-dev --transpile-only scripts/clean-db.ts"
   },
   "dependencies": {
+    "@hono/swagger-ui": "^0.2.2",
     "@hono/zod-openapi": "^0.11.1",
+    "dotenv": "^16.4.5",
     "drizzle-orm": "^0.29.5",
     "drizzle-zod": "^0.5.1",
     "hono": "^4.4.2",
     "pg": "^8.11.5",
     "znv": "^0.4.0",
     "zod": "^3.23.8",
-    "zod-validation-error": "^3.3.0",
-    "dotenv": "^16.4.5",
-    "@hono/swagger-ui": "^0.2.2"
+    "zod-validation-error": "^3.3.0"
   },
   "devDependencies": {
+    "@types/pg": "^8.11.6",
     "bun": "^1.1.9",
     "bun-types": "^1.1.9",
     "drizzle-kit": "^0.21.4"
