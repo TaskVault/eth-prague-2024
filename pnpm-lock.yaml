@@ -10,6 +10,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@hono/swagger-ui':
+        specifier: ^0.2.2
+        version: 0.2.2(hono@4.4.2)
       '@hono/zod-openapi':
         specifier: ^0.11.1
         version: 0.11.1(hono@4.4.2)(zod@3.23.8)
@@ -330,6 +333,11 @@ packages:
     engines: {node: '>=12'}
     cpu: [x64]
     os: [win32]
+
+  '@hono/swagger-ui@0.2.2':
+    resolution: {integrity: sha512-Bco6XdKkTP7yIVWXpquLQayvjwzDmsmsESjF7VcrU/ZPTYafGvvpHf7Z6PHTWyp+JpdYORZXlyZ75T3At2KfAA==}
+    peerDependencies:
+      hono: '*'
 
   '@hono/zod-openapi@0.11.1':
     resolution: {integrity: sha512-lCeAu1fH5cWRQccGsiiJBxHQKT1ueMYP3efdY/4VX6MvGNaLjFiIf5haXhbF2pr3+Eln7ZogKUVSVF+NoCWtgw==}
@@ -883,6 +891,10 @@ snapshots:
 
   '@esbuild/win32-x64@0.19.12':
     optional: true
+
+  '@hono/swagger-ui@0.2.2(hono@4.4.2)':
+    dependencies:
+      hono: 4.4.2
 
   '@hono/zod-openapi@0.11.1(hono@4.4.2)(zod@3.23.8)':
     dependencies:
