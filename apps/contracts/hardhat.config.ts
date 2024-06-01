@@ -22,6 +22,7 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {
+      enableTransientStorage: true,
       // forking: {
       //   url: ENV.MAINET_URL,
       //   blockNumber: 13000000,

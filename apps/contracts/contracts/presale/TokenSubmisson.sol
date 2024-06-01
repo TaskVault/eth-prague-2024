@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./IPoolManager.sol";
+import "./interfaces/IPoolManager.sol";
 
 
 contract MyERC20 is ERC20 {
@@ -38,7 +38,7 @@ contract TokenSubmission {
         owner = msg.sender;
         targetAmount = _targetAmount;
         uniPoolManager = IPoolManager(_uniPoolManager);
-        WETH = _weth;
+        WETH = _WETH;
     }
 
     function submitTokenIdea(string calldata _name, string calldata _symbol) external {
