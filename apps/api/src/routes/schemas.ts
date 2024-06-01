@@ -1,5 +1,10 @@
 import { z } from "@hono/zod-openapi";
 
+export const reactionType = ["like", "dislike"] as const;
+export const ReactionType = z.enum(reactionType);
+export type ReactionType = z.infer<typeof ReactionType>;
+
+
 export const postsOutput = z.object({
     id: z.string(),
     title: z.string(),
@@ -27,3 +32,13 @@ export const postsCreate = z.object({
     image: z.string(),
 });
 export type PostsCreate = z.infer<typeof postsCreate>;
+
+export const reactionsUpsert = z.object({
+    reaction: ReactionType,
+});
+export type ReactionsUpsert = z.infer<typeof reactionsUpsert>;
+
+export const commentsCreate = z.object({
+    text: z.string(),
+});
+export type CommentsCreate = z.infer<typeof commentsCreate>;

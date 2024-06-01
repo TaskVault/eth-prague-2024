@@ -5,6 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
 contract CarbonCreditToken is ERC20Burnable {
     constructor(uint256 initialSupply) ERC20("CarbonCreditToken", "CCR") {
-        _mint(msg.sender, initialSupply);
+        _mint(msg.sender, initialSupply * (10 ** uint256(decimals())));
     }
 }
