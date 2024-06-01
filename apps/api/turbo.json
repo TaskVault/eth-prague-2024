@@ -21,7 +21,9 @@
           "DB_PASSWORD",
           "DB_USER",
           "DB_PORT",
-          "DB_HOST"
+          "DB_HOST",
+          "UPLOADTHING_SECRET",
+          "UPLOADTHING_APP_ID"
         ]
       },
       "test:unit": {
@@ -33,7 +35,9 @@
           "DB_PASSWORD",
           "DB_USER",
           "DB_PORT",
-          "DB_HOST"
+          "DB_HOST",
+          "UPLOADTHING_SECRET",
+          "UPLOADTHING_APP_ID"
         ]
       },
       "prettier": {
