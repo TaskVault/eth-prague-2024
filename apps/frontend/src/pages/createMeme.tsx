@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import {useCallback, useRef, useState} from "react";
 // Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
 import { useUploadThing } from "@/lib/useUploadThing";
 
@@ -83,6 +83,18 @@ export default function Component() {
     subTitle: "",
     description: "",
   });
+  const [downloadHandler, setDownloadHandler] = useState<(() => void) | null>(null);
+
+  const registerDownloadHandler = useCallback((handler: () => void) => {
+    setDownloadHandler(() => handler);
+  }, []);
+
+  const triggerDownload = () => {
+    if (downloadHandler) {
+      downloadHandler();
+    }
+  };
+
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (data) => {
       console.log("upload complete", data);
@@ -107,6 +119,7 @@ export default function Component() {
     console.log(r)
   };
   const handleCreateMeme = () => {
+    triggerDownload();
     console.log("Create meme");
     const title = document.getElementById("title")
       ? (document.getElementById("title") as HTMLInputElement)?.value
@@ -130,7 +143,7 @@ export default function Component() {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <ImageEditorDynamic onDownload={onDownload} />
+      <ImageEditorDynamic onDownload={onDownload} setDownloadHandler={registerDownloadHandler} />
       <div className="space-y-4 min-w-[1000px]">
         <div className="grid gap-2">
           <Label htmlFor="name" className="text-sm font-medium">
