@@ -1,5 +1,5 @@
 {
-  "id": "4ad9cbc2-3eaa-46b0-8ef1-16def8fe70a7",
+  "id": "2702a29e-0c56-4e9c-8412-2d3e383cfdf0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "6",
   "dialect": "postgresql",
@@ -12,7 +12,8 @@
           "name": "id",
           "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "text": {
           "name": "text",
@@ -22,12 +23,6 @@
         },
         "postId": {
           "name": "postId",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "userId": {
-          "name": "userId",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -47,19 +42,6 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
-        },
-        "comments_userId_users_id_fk": {
-          "name": "comments_userId_users_id_fk",
-          "tableFrom": "comments",
-          "tableTo": "users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -73,7 +55,8 @@
           "name": "id",
           "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "likes": {
           "name": "likes",
@@ -94,12 +77,6 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
-        },
-        "userId": {
-          "name": "userId",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
         }
       },
       "indexes": {},
@@ -110,19 +87,6 @@
           "tableTo": "posts",
           "columnsFrom": [
             "postId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "likes_dislikes_userId_users_id_fk": {
-          "name": "likes_dislikes_userId_users_id_fk",
-          "tableFrom": "likes_dislikes",
-          "tableTo": "users",
-          "columnsFrom": [
-            "userId"
           ],
           "columnsTo": [
             "id"
@@ -142,7 +106,8 @@
           "name": "id",
           "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "title": {
           "name": "title",
@@ -196,7 +161,8 @@
           "name": "id",
           "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "wallet": {
           "name": "wallet",
