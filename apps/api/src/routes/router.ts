@@ -1,27 +1,70 @@
-import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { OpenAPIHono, z } from "@hono/zod-openapi";
+import { PostsCreate, postsCreate, postsOutput } from "./schemas";
+import { db } from "db/db";
+import { posts, likesDislikes } from "db/storage.db";
 
 const application = new OpenAPIHono();
 
 application.openapi({
-    method: "get",
-    path: "/test/path",
+    method: "post",
+    path: "/posts/{userId}",
     request: {
         body: {
             content: {
-                "application/json": { schema: z.object({}) },
+                "application/json": { schema: postsCreate },
               },
-        }
+        },
+        params: z.object({
+            userId: z.string()
+        })
     },
     responses: {
-        200: {
+        201: {
             content: {
-                "application/json": {schema: z.object({})}
+                "application/json": {schema: postsOutput}
             },
-            description: "Success",
+            description: "Created post",
         }
     }
 }, async (c) => {
-    return c.json({}, 200);
+    const { userId } = c.req.valid("param");
+    const { title, description, image } = await c.req.json<PostsCreate>();
+
+    // Create a post
+    const post = await db
+    .insert(posts)
+    .values({title, description, image, userId})
+    .returning()
+    .execute();
+
+    // Create likes / dislikes ratio for the post
+    const likesDislikesData = await db
+    .insert(likesDislikes)
+    .values({postId: post[0].id})
+    .returning()
+    .execute();
+
+    return c.json(post[0], 201);
+})
+
+
+application.openapi({
+    method: "get",
+    path: "/posts",
+    responses: {
+        200: {
+            content: {
+                "application/json": {schema: z.array(postsOutput)}
+            },
+            description: "Get all posts",
+        }
+    }
+}, async (c) => {
+    const posts = await db.query.posts.findMany({
+        with: {}
+    });
+
+    return c.json(posts, 200);
 })
 
 export default application;
