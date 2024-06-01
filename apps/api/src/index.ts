@@ -2,8 +2,19 @@ import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import application from "routes/router";
 import {migrateDB} from "./db/db";
+import { cors } from "hono/cors";
+
 
 const app = new OpenAPIHono();
+
+app.use(
+  "*",
+  cors({
+    origin: "*",
+    allowHeaders: ["Origin", "Content-Type", "Authorization"],
+    allowMethods: ["GET", "OPTIONS", "POST", "PUT", "DELETE"],
+  }),
+);
 
 app.route("/", application);
 
@@ -18,7 +29,7 @@ app.doc("/doc", {
 app.get("/ui", swaggerUI({ url: "/doc" }));
 
 export default {
-  port: 3000,
+  port: 3001,
   fetch: app.fetch,
 };
 migrateDB().then(() => {

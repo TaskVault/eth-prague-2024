@@ -1,7 +1,7 @@
 import { OpenAPIHono, z } from "@hono/zod-openapi";
-import { PostsCreate, reactionType, postsCreate, postsOutput, ReactionsUpsert, commentsCreate, CommentsCreate } from "./schemas";
+import { PostsCreate, reactionType, postsCreate, postsOutput, ReactionsUpsert, commentsCreate, CommentsCreate, usersCreate, usersOutput, UsersCreate, ReactionType } from "./schemas";
 import { db } from "db/db";
-import { comments, posts, reactions } from "db/storage.db";
+import { comments, posts, reactions, users } from "db/storage.db";
 import { and, eq } from "drizzle-orm";
 
 const application = new OpenAPIHono();
@@ -43,6 +43,45 @@ application.openapi({
 
 application.openapi({
     method: "get",
+    path: "/posts/{postId}",
+    request: {
+        params: z.object({
+            postId: z.string()
+        })
+    },
+    responses: {
+        200: {
+            content: {
+                "application/json": {schema: postsOutput}
+            },
+            description: "Get post by id",
+        }
+    }
+}, async (c) => {
+    const { postId } = c.req.valid("param");
+
+    const post = await db.query.posts.findFirst({
+        where: (posts, { eq }) => eq(posts.id, postId),
+        with: {reactions: true, comments: true}
+    });
+
+    const likes = post.reactions.filter(r => r.reaction === "like").length;
+    const dislikes = post.reactions.filter(r => r.reaction === "dislike").length;
+
+    return c.json({
+        id: post.id,
+        title: post.title,
+        description: post.description,
+        image: post.image,
+        userId: post.userId,
+        comments: post.comments,
+        likes: likes,
+        dislikes: dislikes,
+    }, 200);
+})
+
+application.openapi({
+    method: "get",
     path: "/posts",
     responses: {
         200: {
@@ -57,7 +96,29 @@ application.openapi({
         with: {reactions: true, comments: true}
     });
 
-    return c.json(posts, 200);
+    // sort posts by most likes first
+    const sortedPosts = posts.sort((a, b) => {
+        const aLikes = a.reactions.filter(r => r.reaction === "like").length;
+        const bLikes = b.reactions.filter(r => r.reaction === "like").length;
+        return bLikes - aLikes;
+    });
+
+    const refinedPostData = sortedPosts.map(post => {
+        const likes = post.reactions.filter(r => r.reaction === "like").length;
+        const dislikes = post.reactions.filter(r => r.reaction === "dislike").length;
+        return {
+            id: post.id,
+            title: post.title,
+            description: post.description,
+            image: post.image,
+            userId: post.userId,
+            comments: post.comments,
+            likes: likes,
+            dislikes: dislikes,
+        }
+    });
+
+    return c.json(refinedPostData, 200);
 })
 
 application.openapi({
@@ -130,4 +191,61 @@ application.openapi({
     return c.json(201);
 })
 
+application.openapi({
+    method: "post",
+    path: "/users",
+    request: {
+        body: {
+            content: {
+                "application/json": { schema: usersCreate }
+            }
+        }   
+    },
+    responses: {
+        201: {
+            content: {
+                "application/json": { schema: usersOutput }
+            },
+            description: "Created user",
+        }
+    }
+}, async (c) => {
+    const { wallet } = await c.req.json<UsersCreate>();
+
+    const user = await db
+    .insert(users)
+    .values({ wallet })
+    .returning()
+    .execute();
+
+    return c.json(user[0], 201);
+});
+
+application.openapi({
+    method: "get",
+    path: "/users/{wallet}",
+    request: {
+        params: z.object({
+            wallet: z.string()
+        })   
+    },
+    responses: {
+        200: {
+            content: {
+                "application/json": { schema: usersOutput }
+            },
+            description: "Created user",
+        }
+    }
+}, async (c) => {
+    const { wallet } = c.req.valid("param");
+
+    const users = await db.query.users.findFirst({
+        where: (users, { eq }) => eq(users.wallet, wallet),
+        with: {posts: true, reactions: true, comments: true},
+
+    });
+
+    return c.json(users, 200);
+});
 export default application;
