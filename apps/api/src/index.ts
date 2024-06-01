@@ -1,6 +1,7 @@
 import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import application from "routes/router";
+import {migrateDB} from "./db/db";
 
 const app = new OpenAPIHono();
 
@@ -20,3 +21,6 @@ export default {
   port: 3000,
   fetch: app.fetch,
 };
+migrateDB().then(() => {
+  console.log("Database migrated");
+})
