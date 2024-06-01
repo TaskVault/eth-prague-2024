@@ -11,12 +11,8 @@ export const postsOutput = z.object({
     description: z.string().optional(),
     image: z.string(),
     userId: z.string(),
-    reactions: z.array(z.object({
-        id: z.string(),
-        reaction: ReactionType,
-        postId: z.string(),
-        userId: z.string(),
-    })),
+    likes: z.number(),
+    dislikes: z.number(),
     comments: z.array(z.object({
         id: z.string(),
         text: z.string(),

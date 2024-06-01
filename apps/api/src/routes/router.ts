@@ -1,5 +1,5 @@
 import { OpenAPIHono, z } from "@hono/zod-openapi";
-import { PostsCreate, reactionType, postsCreate, postsOutput, ReactionsUpsert, commentsCreate, CommentsCreate, usersCreate, usersOutput, UsersCreate } from "./schemas";
+import { PostsCreate, reactionType, postsCreate, postsOutput, ReactionsUpsert, commentsCreate, CommentsCreate, usersCreate, usersOutput, UsersCreate, ReactionType } from "./schemas";
 import { db } from "db/db";
 import { comments, posts, reactions, users } from "db/storage.db";
 import { and, eq } from "drizzle-orm";
@@ -57,7 +57,29 @@ application.openapi({
         with: {reactions: true, comments: true}
     });
 
-    return c.json(posts, 200);
+    // sort posts by most likes first
+    const sortedPosts = posts.sort((a, b) => {
+        const aLikes = a.reactions.filter(r => r.reaction === "like").length;
+        const bLikes = b.reactions.filter(r => r.reaction === "like").length;
+        return bLikes - aLikes;
+    });
+
+    const refinedPostData = sortedPosts.map(post => {
+        const likes = post.reactions.filter(r => r.reaction === "like").length;
+        const dislikes = post.reactions.filter(r => r.reaction === "dislike").length;
+        return {
+            id: post.id,
+            title: post.title,
+            description: post.description,
+            image: post.image,
+            userId: post.userId,
+            comments: post.comments,
+            likes: likes,
+            dislikes: dislikes,
+        }
+    });
+
+    return c.json(refinedPostData, 200);
 })
 
 application.openapi({
