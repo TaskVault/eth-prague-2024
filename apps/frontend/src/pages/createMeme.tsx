@@ -227,6 +227,7 @@ export default function Component() {
           </Button>
         </div>
       </div>
+      {showPopup == "loading" ? <p>Uploading...</p> : null}
       {showPopup == "yes" && (
         <Menu
           meme={{
