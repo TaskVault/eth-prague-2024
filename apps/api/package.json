@@ -2,11 +2,12 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "db:start": "docker compose -f postgres.yml up -d",
-    "db:generate-migration": "pnpm drizzle-kit generate:pg",
-    "db:migrate": "ts-node-dev --transpile-only drizzle/migrate.ts",
+    "db:generate-migration": "pnpm drizzle-kit generate",
+    "db:migrate": "bun run drizzle/migrate.ts",
     "db:studio": "pnpm drizzle-kit studio --port 3100",
     "db:stop": "docker compose -f postgres.yml down",
-    "db:clean": "ts-node-dev --transpile-only scripts/clean-db.ts"
+    "db:clean": "bun run scripts/clean-db.ts",
+    "generate:openapi": "bun run openapi.ts"
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.2.2",
