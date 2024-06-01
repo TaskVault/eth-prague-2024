@@ -10,11 +10,13 @@ import { useUploadThing } from "@/lib/useUploadThing";
 import { usePosts } from "@/lib/usePosts";
 import { v4 as uuidv4 } from "uuid";
 
-interface iMeme {
+export interface iMeme {
   title: string;
   subTitle: string;
   description: string;
   imageUrl?: string;
+  id?: string;
+  likes?: number;
 }
 const Menu = ({
   meme,

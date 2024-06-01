@@ -14,62 +14,42 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePosts } from "@/lib/usePosts";
+import { iMeme } from "./createMeme";
 
 const Home = () => {
-  interface Meme {
-    id: number;
-    title: string;
-    imgSrc: string;
-    votes: number;
-  }
 
-  const memeData = [
-    {
-      id: 1,
-      title: "Doge Coin Meme",
-      subtitle: "subtitle",
-      description: "description", 
-      imgSrc: "/placeholder.svg", 
-      votes: 42 },
-    { id: 2, title: "Ape NFT Meme", imgSrc: "/placeholder.svg", votes: 28 },
-    {
-      id: 3,
-      title: "Crypto Punks Meme",
-      imgSrc: "/placeholder.svg",
-      votes: 19,
-    },
-    { id: 4, title: "Ethereum Meme", imgSrc: "/placeholder.svg", votes: 14 },
-    { id: 5, title: "Solana Meme", imgSrc: "/placeholder.svg", votes: 9 },
-    { id: 6, title: "Bored Ape Meme", imgSrc: "/placeholder.svg", votes: 6 },
-    { id: 7, title: "1 Meme", imgSrc: "/placeholder.svg", votes: 5 },
-    { id: 8, title: "Daniel Stinkt", imgSrc: "/placeholder.svg", votes: 204 },
-  ];
-  const [menu, setMenu] = useState<{ visible: boolean; id: number | null }>({
-    visible: false,
-    id: null,
+  const [menu, setMenu] = useState<{ visible: boolean; id?: string | number }>({
+    visible: false
   });
-  const [selectedMeme, setSelectedMeme] = useState<Meme>();
+  const [selectedMeme, setSelectedMeme] = useState<iMeme>();
   const [selectedCrypto, setSelectedCrypto] = useState("bitcoin");
   const [amount, setAmount] = useState("");
   const handleCryptoChange = (value: any) => {
     setSelectedCrypto(value);
     setAmount("");
   };
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  const handleCardClick = (id: number) => {
-    const meme = memeData.find((m) => m.id === id);
-    setSelectedMeme(meme);
+  const handleDBCardClick = (id: string) => {
+    if (!posts.data) return;
+    const meme = posts.data.find((m) => m.id === id);
+    if (!meme) return;
+    const cur: iMeme = {
+      id: meme.id,
+      title: meme.title,
+      imageUrl: meme.image,
+      description: meme.description || "AAA",
+      subTitle: "Hardcoded Subtitle",
+    };
+    setSelectedMeme(cur);
     setMenu({
       visible: true,
-      id,
+      id: id,
     });
-  };
+  }
 
   const handleMenuClose = () => {
     setMenu({
       visible: false,
-      id: null,
+      id: undefined,
     });
     setSelectedMeme(undefined);
   };
@@ -87,14 +67,7 @@ const Home = () => {
   }, []);
 
   const { createPost, posts } = usePosts();
-  // console log all posts on page load
-
-  useEffect(() => {
-    console.log("posts.data");
-    console.log(posts.data);
-  }, [posts.data]);
-
-  const Menu = ({ meme, onClose }: { meme: any; onClose: () => void }) => (
+  const Menu = ({ meme, onClose }: { meme: iMeme; onClose: () => void }) => (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
       <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4">
         <button
@@ -104,7 +77,7 @@ const Home = () => {
           Close
         </button>
         <img
-          src={meme.imgSrc}
+          src={meme.imageUrl}
           alt={meme.title}
           className="w-full h-48 object-cover mb-4 rounded-lg"
         />
@@ -146,7 +119,7 @@ const Home = () => {
               <ArrowUpIcon className="w-5 h-5" />
             </button>
             <span className="text-gray-700 dark:text-gray-300">
-              {meme.votes}
+              {meme.likes}
             </span>
               <button
                   className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
@@ -169,22 +142,22 @@ const Home = () => {
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {memeData.map((meme) => (
+        {posts.data && posts.data.map((post) => (
           <Card
-            key={meme.id}
+            key={post.id}
             className="bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
-            onClick={() => handleCardClick(meme.id)}
+            onClick={() => handleDBCardClick(post.id)}
           >
             <img
-              src={meme.imgSrc}
-              alt={meme.title}
+              src={post.image}
+              alt={post.title}
               width={400}
               height={300}
               className="w-full h-48 object-cover"
             />
             <CardContent>
               <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
-                {meme.title}
+                {post.title}
               </h2>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -192,7 +165,7 @@ const Home = () => {
                     <ArrowUpIcon className="w-5 h-5" />
                   </button>
                   <span className="text-gray-700 dark:text-gray-300">
-                    {meme.votes}
+                    {post.likes}
                   </span>
                   <button className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
                     <ArrowDownIcon className="w-5 h-5" />
