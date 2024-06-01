@@ -1,9 +1,8 @@
 import { relations } from "drizzle-orm";
 import { integer, pgTable, text,uuid } from "drizzle-orm/pg-core";
 import { number, z } from "zod";
+import { ReactionType } from "routes/schemas";
 
-const likesDislikes = ["like", "dislike"] as const;
-export type LikesDislikes = typeof likesDislikes[number];
 
 export const users = pgTable("users",
     {
@@ -24,11 +23,11 @@ export const posts = pgTable("posts", {
 
 export const reactions = pgTable("reactions", {
   id: uuid("id").primaryKey().defaultRandom(),
-  reaction: text("reaction").$type<LikesDislikes>().notNull(),
+  reaction: text("reaction").$type<ReactionType>().notNull(),
   userId: uuid("userId").notNull().references(() => users.id),
   postId: uuid("postId")
-  .notNull()
-  .references(() => posts.id),
+  .notNull().unique()
+  .references(() => posts.id).unique(),
 });
 
 export const comments = pgTable("comments", {
