@@ -51,7 +51,7 @@ contract TokenSubmission {
         tokenIdeas[_ideaIndex].votes += amount;
     }
 
-    function createTokenAndAddLiquidity(address manager, address hook, PoolModifyLiquidityTest lpRouter, PoolSwapTest swapRouter) external {
+    function createTokenAndAddLiquidity(address manager, address hook, PoolModifyLiquidityTest poolModifyLiqTest, PoolSwapTest poolSwapTest) external {
         require(totalCollected >= targetAmount, "Target not met");
 
         // Token creation
@@ -63,12 +63,12 @@ contract TokenSubmission {
 
         newToken.approve(manager, tokenAmount);
         // approve the tokens to the routers
-        newToken.approve(address(lpRouter), type(uint256).max);
-        newToken.approve(address(swapRouter), type(uint256).max);
+        newToken.approve(address(poolModifyLiqTest), type(uint256).max);
+        newToken.approve(address(poolSwapTest), type(uint256).max);
 
         IERC20 weth = IERC20(WETH);
-        weth.approve(address(lpRouter), type(uint256).max);
-        weth.approve(address(swapRouter), type(uint256).max);
+        weth.approve(address(poolModifyLiqTest), type(uint256).max);
+        weth.approve(address(poolSwapTest), type(uint256).max);
         weth.approve(address(manager), type(uint256).max);
 
         // LP Creation
@@ -83,7 +83,7 @@ contract TokenSubmission {
 
 
         // add full range liquidity to the pool
-         lpRouter.modifyLiquidity(
+        poolModifyLiqTest.modifyLiquidity(
              poolKey,
              IPoolManager.ModifyLiquidityParams(-60, 60, 1000, 0),
              ZERO_BYTES
