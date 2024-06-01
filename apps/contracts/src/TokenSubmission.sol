@@ -62,7 +62,7 @@ contract TokenSubmission {
         MemeCCRToken newToken = new MemeCCRToken(winningIdea.name, winningIdea.symbol, tokenAmount);
 
         newToken.approve(manager, tokenAmount);
-        
+
         // LP Creation
         // initialize the pool
         int24 tickSpacing = 60;
