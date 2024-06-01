@@ -4,7 +4,7 @@ async function fetchAndSave() {
     // read path from the command line
     // const path = process.argv[3];
     try {
-        const response = await fetch('http://localhost:3000/doc');
+        const response = await fetch('http://localhost:3001/doc');
         if (!response.ok) {
             throw new Error('Network response was not ok ' + response.statusText);
         }
