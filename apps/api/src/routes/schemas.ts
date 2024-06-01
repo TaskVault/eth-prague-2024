@@ -13,7 +13,7 @@ export const postsOutput = z.object({
     userId: z.string(),
     reactions: z.array(z.object({
         id: z.string(),
-        reaction: z.string(),
+        reaction: ReactionType,
         postId: z.string(),
         userId: z.string(),
     })),
@@ -42,3 +42,33 @@ export const commentsCreate = z.object({
     text: z.string(),
 });
 export type CommentsCreate = z.infer<typeof commentsCreate>;
+
+export const usersCreate = z.object({
+    wallet: z.string(),
+});
+export type UsersCreate = z.infer<typeof usersCreate>;
+
+export const usersOutput = z.object({
+    id: z.string(),
+    wallet: z.string(),
+    posts: z.array(z.object({
+        id: z.string(),
+        title: z.string(),
+        description: z.string().optional(),
+        image: z.string(),
+        userId: z.string(),
+    })),
+    reactions: z.array(z.object({
+        id: z.string(),
+        reaction: ReactionType,
+        postId: z.string(),
+        userId: z.string(),
+    })),
+    comments: z.array(z.object({
+        id: z.string(),
+        text: z.string(),
+        postId: z.string(),
+        userId: z.string(),
+    }))
+});
+export type UsersOutput = z.infer<typeof usersOutput>;
