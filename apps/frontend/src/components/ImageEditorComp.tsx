@@ -5,7 +5,11 @@ import {useEffect, useRef } from 'react';
 import {Button} from "@/components/ui/button";
 
 
-export const ImageEditorComp = () => {
+export const ImageEditorComp = (props?: {
+    onDownload?: (props: {
+        file: File;
+    }) => void;
+}) => {
     const editorRef = useRef(null);
 
     const handleDownload = () => {
@@ -13,6 +17,10 @@ export const ImageEditorComp = () => {
         const imgEl = imageEditorInst.toDataURL();
 
         console.log("handleDownload", imgEl);
+        const buffer = Buffer.from(imgEl.split(',')[1], 'base64')
+        const blob = new Blob([buffer], { type: 'image/png' });
+        const file = new File([blob], 'image.png', { type: 'image/png' });
+        props?.onDownload?.({ file });
     }
 
     // hide .tui-image-editor-download-btn button after component mounted
