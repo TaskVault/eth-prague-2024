@@ -43,6 +43,45 @@ application.openapi({
 
 application.openapi({
     method: "get",
+    path: "/posts/{postId}",
+    request: {
+        params: z.object({
+            postId: z.string()
+        })
+    },
+    responses: {
+        200: {
+            content: {
+                "application/json": {schema: postsOutput}
+            },
+            description: "Get post by id",
+        }
+    }
+}, async (c) => {
+    const { postId } = c.req.valid("param");
+
+    const post = await db.query.posts.findFirst({
+        where: (posts, { eq }) => eq(posts.id, postId),
+        with: {reactions: true, comments: true}
+    });
+
+    const likes = post.reactions.filter(r => r.reaction === "like").length;
+    const dislikes = post.reactions.filter(r => r.reaction === "dislike").length;
+
+    return c.json({
+        id: post.id,
+        title: post.title,
+        description: post.description,
+        image: post.image,
+        userId: post.userId,
+        comments: post.comments,
+        likes: likes,
+        dislikes: dislikes,
+    }, 200);
+})
+
+application.openapi({
+    method: "get",
     path: "/posts",
     responses: {
         200: {

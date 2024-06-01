@@ -1,6 +1,5 @@
 import { relations } from "drizzle-orm";
-import { integer, pgTable, text,uuid } from "drizzle-orm/pg-core";
-import { number, z } from "zod";
+import { pgTable, text,uuid } from "drizzle-orm/pg-core";
 import { ReactionType } from "routes/schemas";
 
 
