@@ -9,9 +9,11 @@ export const usePosts = () => {
             description: string;
             title: string;
             image: string;
+            userId: string;
         }) => {
             const res = apiClient["/posts/{userId}"].post({
-                params: {userId: "1"},
+                // create random uuid ( ?? )
+                params: {userId: variables.userId},
                 json: {
                     description: variables.description,
                     title: variables.title,
