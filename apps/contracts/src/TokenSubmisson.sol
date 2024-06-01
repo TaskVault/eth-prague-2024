@@ -3,20 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IPoolManager} from "v4-core/src/interfaces/IPoolManager.sol";
-
-
-contract MyERC20 is ERC20 {
-    address public owner;
-
-    constructor(string memory _name, string memory _symbol) ERC20(_name, _symbol) {
-        owner = msg.sender;
-    }
-
-    function mint(address to, uint256 amount) external {
-        require(msg.sender == owner, "Not authorized");
-        _mint(to, amount);
-    }
-}
+import {MemeCCRToken} from "./Tokens/MemeCCRToken.sol";
 
 contract TokenSubmission {
     struct TokenIdea {
@@ -59,12 +46,11 @@ contract TokenSubmission {
         require(totalCollected >= targetAmount, "Target not met");
 
         TokenIdea memory winningIdea = getWinningIdea();
-        MyERC20 newToken = new MyERC20(winningIdea.name, winningIdea.symbol);
 
         uint256 liquidityAmount = totalCollected / 2;
         uint256 tokenAmount = liquidityAmount * 1000; // Example ratio
 
-        newToken.mint(address(this), tokenAmount);
+        MemeCCRToken newToken = new MemeCCRToken(winningIdea.name, winningIdea.symbol, tokenAmount);
 
         newToken.approve(address(uniPoolManager), tokenAmount);
         // TODO create pool with univ4 and add liquidity
