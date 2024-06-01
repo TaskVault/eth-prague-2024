@@ -38,16 +38,16 @@ contract TokenSubmissionTest is Test, Deployers {
 
     function testTokenSubmission() public {
         // create the token submission contract
-        tokenSubmission = new TokenSubmission(1, address(WETH));
+        tokenSubmission = new TokenSubmission(3 * 10 ** 18, address(WETH));
 
         // Approve the TokenSubmission contract to spend WETH
-        WETH.approve(address(tokenSubmission), 5 * 10 ** 18);
+        WETH.approve(address(tokenSubmission), 20 * 10 ** 18);
 
         // Mint additional WETH to the msg.sender
         WETH.mint(address(this), 20 * 10 ** 18);
 
         // Transfer WETH to the TokenSubmission contract
-        WETH.transfer(address(tokenSubmission), 1 * 10 ** 18);
+        // WETH.transfer(address(tokenSubmission), 1 * 10 ** 18);
 
         // Submit token ideas
         tokenSubmission.submitTokenIdea("Token1", "TKN1");
@@ -55,7 +55,11 @@ contract TokenSubmissionTest is Test, Deployers {
         // Contribute and vote
         console.log("SUBMISSION SENDER: ", msg.sender);
 
-        tokenSubmission.contributeAndVote(0, 1);
+        tokenSubmission.contributeAndVote(0, 2 * 10 ** 18);
+        tokenSubmission.contributeAndVote(0, 1 * 10 ** 18);
+        tokenSubmission.contributeAndVote(0, 1 * 10 ** 18);
+
+        tokenSubmission.createTokenAndAddLiquidity(address(manager), address(0), modifyLiquidityRouter, swapRouter);
 
         // assertEq(tokenSubmission.targetAmount, 1000);
     }
