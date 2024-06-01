@@ -1,29 +1,32 @@
 "use client";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
-import {useCallback, useRef, useState} from "react";
+import { use, useCallback, useRef, useState, useEffect } from "react";
 // Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
 import { useUploadThing } from "@/lib/useUploadThing";
+import { usePosts } from "@/lib/usePosts";
+import { v4 as uuidv4 } from "uuid";
 
-// TODO: Add Overlay after generate meme to show the generated meme picture + data + button to Submit MEME
-interface iMeme {
+export interface iMeme {
   title: string;
   subTitle: string;
   description: string;
   imageUrl?: string;
+  id?: string;
+  likes?: number;
 }
-const Menu = ({ meme, onClose }: { meme: iMeme; onClose: () => void }) => (
+const Menu = ({
+  meme,
+  onClose,
+  onSubmitMeme,
+}: {
+  meme: iMeme;
+  onSubmitMeme: () => void;
+  onClose: () => void;
+}) => (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
     <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4">
       <button
@@ -49,6 +52,8 @@ const Menu = ({ meme, onClose }: { meme: iMeme; onClose: () => void }) => (
           className=""
           onClick={() => {
             console.log("Submit meme");
+            console.log(meme);
+            onSubmitMeme();
             onClose();
           }}
         >
@@ -83,7 +88,9 @@ export default function Component() {
     subTitle: "",
     description: "",
   });
-  const [downloadHandler, setDownloadHandler] = useState<(() => void) | null>(null);
+  const [downloadHandler, setDownloadHandler] = useState<(() => void) | null>(
+    null
+  );
 
   const registerDownloadHandler = useCallback((handler: () => void) => {
     setDownloadHandler(() => handler);
@@ -97,53 +104,62 @@ export default function Component() {
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (data) => {
-      console.log("upload complete", data);
       setFileUrl(data[0].url);
-      setShowPopup("yes");
+      console.log("upload complete");
+      console.log(memeData);
       setMemeData({
         ...memeData,
         imageUrl: data[0].url,
       });
+      setShowPopup("yes");
     },
     onUploadError: () => {
       alert("error occurred while uploading");
     },
     onUploadBegin: () => {
-      alert("upload has begun");
       setShowPopup("loading");
     },
   });
   const onDownload = async (props: { file: File }) => {
-    console.log("onDownload", props);
     const r = await startUpload([props.file]);
-    console.log(r)
   };
+
   const handleCreateMeme = () => {
     triggerDownload();
     console.log("Create meme");
-    const title = document.getElementById("title")
-      ? (document.getElementById("title") as HTMLInputElement)?.value
-      : null;
-    const subTitle = document.getElementById("subtitle")
-      ? (document.getElementById("subtitle") as HTMLInputElement)?.value
-      : null;
-    const description = document.getElementById("description")
-      ? (document.getElementById("description") as HTMLInputElement)?.value
-      : null;
-    if (!title || !subTitle || !description) {
-      return;
-    }
-    setMemeData({
-      title: title,
-      subTitle: subTitle,
-      description: description,
-    });
+    console.log(memeData);
     setShowPopup("loading");
+  };
+
+  const { createPost } = usePosts();
+  const submitPost = async () => {
+    //Hardcoded cuz beginning
+    const newUuid = "766b287e-cf55-4ee0-956b-9b010dc9400e";
+    const res = await createPost
+      .mutateAsync({
+        title: memeData.title,
+        description: memeData.description,
+        image: memeData.imageUrl || "",
+        userId: newUuid,
+      })
+      .then((r) => {
+        console.log("post sent");
+        return r;
+      })
+      .catch((e) => {
+        console.log("error");
+        console.log(e);
+      });
+    console.log("post sent");
+    console.log(res);
   };
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <ImageEditorDynamic onDownload={onDownload} setDownloadHandler={registerDownloadHandler} />
+      <ImageEditorDynamic
+        onDownload={onDownload}
+        setDownloadHandler={registerDownloadHandler}
+      />
       <div className="space-y-4 min-w-[1000px]">
         <div className="grid gap-2">
           <Label htmlFor="name" className="text-sm font-medium">
@@ -154,6 +170,12 @@ export default function Component() {
             type="text"
             placeholder="Enter your name"
             className="rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none"
+            onChange={(e) => {
+              setMemeData({
+                ...memeData,
+                title: e.target.value,
+              });
+            }}
           />
         </div>
         <div className="grid gap-2">
@@ -165,6 +187,12 @@ export default function Component() {
             type="text"
             placeholder="Subtitle"
             className="rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none"
+            onChange={(e) => {
+              setMemeData({
+                ...memeData,
+                subTitle: e.target.value,
+              });
+            }}
           />
         </div>
         <div className="grid gap-2">
@@ -175,6 +203,12 @@ export default function Component() {
             id="description"
             placeholder="Enter your message"
             className="rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none min-h-[120px]"
+            onChange={(e) => {
+              setMemeData({
+                ...memeData,
+                description: e.target.value,
+              });
+            }}
           />
         </div>
         <div className="flex justify-end gap-2">
@@ -195,6 +229,7 @@ export default function Component() {
           </Button>
         </div>
       </div>
+      {showPopup == "loading" ? <p>Uploading...</p> : null}
       {showPopup == "yes" && (
         <Menu
           meme={{
@@ -204,6 +239,7 @@ export default function Component() {
             imageUrl: fileUrl || "",
           }}
           onClose={() => setShowPopup("no")}
+          onSubmitMeme={() => submitPost()}
         />
       )}
     </div>

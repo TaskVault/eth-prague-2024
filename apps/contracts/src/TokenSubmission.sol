@@ -11,6 +11,7 @@ import {CurrencyLibrary, Currency} from "v4-core/src/types/Currency.sol";
 import {IHooks} from "v4-core/src/interfaces/IHooks.sol";
 import {Constants} from "v4-core/src/../test/utils/Constants.sol";
 import {TickMath} from "v4-core/src/libraries/TickMath.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract TokenSubmission {
     struct TokenIdea {
@@ -56,13 +57,20 @@ contract TokenSubmission {
         // Token creation
         TokenIdea memory winningIdea = getWinningIdea();
 
-        uint256 liquidityAmount = totalCollected / 2;
-        uint256 tokenAmount = liquidityAmount * 1000; // Example ratio
+        uint256 tokenAmount = totalCollected;
 
         MemeCCRToken newToken = new MemeCCRToken(winningIdea.name, winningIdea.symbol, tokenAmount);
 
         newToken.approve(manager, tokenAmount);
-        
+        // approve the tokens to the routers
+        newToken.approve(address(lpRouter), type(uint256).max);
+        newToken.approve(address(swapRouter), type(uint256).max);
+
+        IERC20 weth = IERC20(WETH);
+        weth.approve(address(lpRouter), type(uint256).max);
+        weth.approve(address(swapRouter), type(uint256).max);
+        weth.approve(address(manager), type(uint256).max);
+
         // LP Creation
         // initialize the pool
         int24 tickSpacing = 60;
@@ -71,18 +79,15 @@ contract TokenSubmission {
             PoolKey(Currency.wrap(address(newToken)), Currency.wrap(WETH), 3000, tickSpacing, IHooks(hook));
         IPoolManager(manager).initialize(poolKey, Constants.SQRT_PRICE_1_1, ZERO_BYTES);
 
-        // approve the tokens to the routers
-        newToken.approve(address(lpRouter), type(uint256).max);
-        newToken.approve(address(swapRouter), type(uint256).max);
+
+
 
         // add full range liquidity to the pool
-        lpRouter.modifyLiquidity(
-            poolKey,
-            IPoolManager.ModifyLiquidityParams(
-                TickMath.minUsableTick(tickSpacing), TickMath.maxUsableTick(tickSpacing), 100 ether, 0
-            ),
-            ZERO_BYTES
-        );
+         lpRouter.modifyLiquidity(
+             poolKey,
+             IPoolManager.ModifyLiquidityParams(-60, 60, 1000, 0),
+             ZERO_BYTES
+         );
 
         payable(owner).transfer(address(this).balance);
     }

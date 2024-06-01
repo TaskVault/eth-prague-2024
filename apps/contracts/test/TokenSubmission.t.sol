@@ -21,8 +21,7 @@ contract TokenSubmissionTest is Test, Deployers {
     using CurrencyLibrary for Currency;
 
     TokenSubmission tokenSubmission;
-
-    address WETH;
+    MockERC20 WETH;
 
     function setUp() public {
         // creates the pool manager, utility routers, and test tokens
@@ -31,28 +30,36 @@ contract TokenSubmissionTest is Test, Deployers {
 
         MockERC20 _WETH = new MockERC20("WETH", "WETH", 18);
 
-        // Send some WETH
-        console.log("Minter WETH: ", msg.sender);
-        _WETH.mint(msg.sender, 20);
+        // Mint WETH to the msg.sender
+        _WETH.mint(address(this), 20 * 10 ** 18);
 
-        WETH = address(_WETH);
+        WETH = _WETH;
     }
 
     function testTokenSubmission() public {
         // create the token submission contract
-        tokenSubmission = new TokenSubmission(1, WETH);
+        tokenSubmission = new TokenSubmission(3 * 10 ** 18, address(WETH));
 
-        MockERC20(WETH).approve(address(tokenSubmission), 5);
-        MockERC20(WETH).mint(msg.sender, 20);
+        // Approve the TokenSubmission contract to spend WETH
+        WETH.approve(address(tokenSubmission), 20 * 10 ** 18);
 
-        MockERC20(WETH).transfer(msg.sender, 5);
-        // submit token ideas
+        // Mint additional WETH to the msg.sender
+        WETH.mint(address(this), 20 * 10 ** 18);
+
+        // Transfer WETH to the TokenSubmission contract
+        // WETH.transfer(address(tokenSubmission), 1 * 10 ** 18);
+
+        // Submit token ideas
         tokenSubmission.submitTokenIdea("Token1", "TKN1");
 
-        // contribute and vote
-        console.log("SUBMISION SENDER: ", msg.sender);
+        // Contribute and vote
+        console.log("SUBMISSION SENDER: ", msg.sender);
 
-        // tokenSubmission.contributeAndVote(0, 1);
+        tokenSubmission.contributeAndVote(0, 2 * 10 ** 18);
+        tokenSubmission.contributeAndVote(0, 1 * 10 ** 18);
+        tokenSubmission.contributeAndVote(0, 1 * 10 ** 18);
+
+        tokenSubmission.createTokenAndAddLiquidity(address(manager), address(0), modifyLiquidityRouter, swapRouter);
 
         // assertEq(tokenSubmission.targetAmount, 1000);
     }
