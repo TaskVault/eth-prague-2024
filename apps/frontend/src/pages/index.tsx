@@ -1,5 +1,16 @@
 import type { NextPage } from "next";
-import { JSX, SVGProps, useState } from "react";
+import { JSX, SVGProps, useState, useEffect, useRef } from "react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Home: NextPage = () => {
   interface Meme {
@@ -28,6 +39,13 @@ const Home: NextPage = () => {
     id: null,
   });
   const [selectedMeme, setSelectedMeme] = useState<Meme>();
+  const [selectedCrypto, setSelectedCrypto] = useState("bitcoin");
+  const [amount, setAmount] = useState("");
+  const handleCryptoChange = (value: any) => {
+    setSelectedCrypto(value);
+    setAmount("");
+  };
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const handleCardClick = (id: number) => {
     const meme = memeData.find((m) => m.id === id);
@@ -46,6 +64,18 @@ const Home: NextPage = () => {
     setSelectedMeme(undefined);
   };
 
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleMenuClose();
+      }
+    };
+    document.addEventListener("keydown", handleEscapeKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, []);
+
   const Menu = ({ meme, onClose }: { meme: any; onClose: () => void }) => (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
       <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4">
@@ -63,6 +93,35 @@ const Home: NextPage = () => {
         <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
           {meme.title}
         </h2>
+        <div className="flex items-center gap-4 w-full max-w-md">
+          <Input
+            type="number"
+            placeholder="Amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="flex-1"
+          />
+          <Select value={selectedCrypto} onValueChange={handleCryptoChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select Crypto" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Popular</SelectLabel>
+                <SelectItem value="bitcoin">Bitcoin (BTC)</SelectItem>
+                <SelectItem value="ethereum">Ethereum (ETH)</SelectItem>
+                <SelectItem value="solana">Solana (SOL)</SelectItem>
+              </SelectGroup>
+              <SelectSeparator />
+              <SelectGroup>
+                <SelectLabel>Other</SelectLabel>
+                <SelectItem value="litecoin">Litecoin (LTC)</SelectItem>
+                <SelectItem value="ripple">Ripple (XRP)</SelectItem>
+                <SelectItem value="dogecoin">Dogecoin (DOGE)</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <button className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
