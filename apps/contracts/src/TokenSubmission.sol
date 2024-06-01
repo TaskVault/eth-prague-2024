@@ -50,7 +50,7 @@ contract TokenSubmission {
         tokenIdeas[_ideaIndex].votes += amount;
     }
 
-    function createTokenAndAddLiquidity(address manager, address hook, PoolModifyLiquidityTest lpRouter, PoolSwapTest swapRouter) external {
+    function createTokenAndAddLiquidity(address manager, PoolModifyLiquidityTest lpRouter, PoolSwapTest swapRouter) external {
         require(totalCollected >= targetAmount, "Target not met");
 
         // Token creation
