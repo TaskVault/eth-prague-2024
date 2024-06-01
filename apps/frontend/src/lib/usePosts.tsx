@@ -23,7 +23,7 @@ export const usePosts = () => {
     });
 
     const posts = useQuery({
-        queryKey: ["posts"],
+        queryKey: ["post"],
         queryFn: async () => {
             const res = apiClient["/posts"].get()
             return res.json();

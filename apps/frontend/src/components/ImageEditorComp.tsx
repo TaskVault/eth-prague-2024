@@ -1,34 +1,34 @@
 import 'tui-image-editor/dist/tui-image-editor.css';
 // @ts-ignore
 import ImageEditor from '@toast-ui/react-image-editor';
-import {useEffect, useRef } from 'react';
-import {Button} from "@/components/ui/button";
+import { useEffect, useRef, useState } from 'react';
+import { Button } from "@/components/ui/button";
 
-
-export const ImageEditorComp = (props?: {
+export const ImageEditorComp = (props: {
     onDownload?: (props: {
         file: File;
     }) => void;
+    setDownloadHandler?: (handler: () => void) => void;
 }) => {
     const editorRef = useRef(null);
+    const [hasDownloaded, setHasDownloaded] = useState(false);
 
     const handleDownload = () => {
+        // @ts-ignore
         const imageEditorInst = editorRef.current.getInstance();
         const imgEl = imageEditorInst.toDataURL();
-
-        console.log("handleDownload", imgEl);
-        const buffer = Buffer.from(imgEl.split(',')[1], 'base64')
+        const buffer = Buffer.from(imgEl.split(',')[1], 'base64');
         const blob = new Blob([buffer], { type: 'image/png' });
         const file = new File([blob], 'image.png', { type: 'image/png' });
         props?.onDownload?.({ file });
-    }
+    };
 
-    // hide .tui-image-editor-download-btn button after component mounted
     useEffect(() => {
-        const downloadBtn = document.querySelector('.tui-image-editor-download-btn');
-        downloadBtn.style.display = 'none !important';
-        console.log("downloadBtn", downloadBtn);
+        if (props.setDownloadHandler) {
+            props.setDownloadHandler(handleDownload);
+        }
     }, []);
+
     return (
         <>
             <ImageEditor
@@ -52,11 +52,12 @@ export const ImageEditorComp = (props?: {
                     rotatingPointOffset: 70,
                 }}
                 usageStatistics={true}
-                onFocus={(props) => console.log("onFocus", props)}
-                onAddText={(props) => console.log("onAddText", props)}
-                onDownload={(props) => console.log("onDownload", props)}
             />
-            <Button onClick={handleDownload}>Download</Button>
+            {!props.setDownloadHandler && (
+                <Button onClick={handleDownload} disabled={hasDownloaded}>
+                    {hasDownloaded ? 'Downloaded' : 'Download'}
+                </Button>
+            )}
         </>
     );
-}
+};
