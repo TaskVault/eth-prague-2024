@@ -1,7 +1,7 @@
 import { OpenAPIHono, z } from "@hono/zod-openapi";
-import { ReactionType, PostsCreate, reactionType, postsCreate, postsOutput, ReactionsUpsert } from "./schemas";
+import { PostsCreate, reactionType, postsCreate, postsOutput, ReactionsUpsert, commentsCreate, CommentsCreate } from "./schemas";
 import { db } from "db/db";
-import { posts, reactions } from "db/storage.db";
+import { comments, posts, reactions } from "db/storage.db";
 import { and, eq } from "drizzle-orm";
 
 const application = new OpenAPIHono();
@@ -40,7 +40,6 @@ application.openapi({
 
     return c.json(post[0], 201);
 })
-
 
 application.openapi({
     method: "get",
@@ -98,6 +97,37 @@ application.openapi({
     }
 
     return c.json(204);
+})
+
+application.openapi({
+    method: "post",
+    path: "/posts/{postId}/comments/{userId}",
+    request: {
+        body: {
+            content: {
+                "application/json": { schema: commentsCreate},
+            }
+        },
+        params: z.object({
+            postId: z.string(),
+            userId: z.string(),
+        })
+    },
+    responses: {
+        201: {
+            description: "Created comment",
+        }
+    }
+}, async (c) => {
+    const { postId, userId } = c.req.valid("param");
+    const { text } = await c.req.json<CommentsCreate>();
+
+    await db
+    .insert(comments)
+    .values({ postId, userId, text })
+    .execute();
+
+    return c.json(201);
 })
 
 export default application;
