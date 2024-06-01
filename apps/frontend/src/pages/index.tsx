@@ -32,7 +32,7 @@ const Home: NextPage = () => {
     { id: 5, title: "Solana Meme", imgSrc: "/placeholder.svg", votes: 9 },
     { id: 6, title: "Bored Ape Meme", imgSrc: "/placeholder.svg", votes: 6 },
     { id: 7, title: "1 Meme", imgSrc: "/placeholder.svg", votes: 5 },
-    { id: 8, title: "Daniel Stinkt", imgSrc: "/placeholder.svg", votes: 192 },
+    { id: 8, title: "Daniel Stinkt", imgSrc: "/placeholder.svg", votes: 204 },
   ];
   const [menu, setMenu] = useState<{ visible: boolean; id: number | null }>({
     visible: false,
