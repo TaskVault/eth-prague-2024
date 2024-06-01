@@ -6,6 +6,18 @@ export const postsOutput = z.object({
     description: z.string().optional(),
     image: z.string(),
     userId: z.string(),
+    reactions: z.array(z.object({
+        id: z.string(),
+        reaction: z.string(),
+        postId: z.string(),
+        userId: z.string(),
+    })),
+    comments: z.array(z.object({
+        id: z.string(),
+        text: z.string(),
+        postId: z.string(),
+        userId: z.string(),
+    }))
 });
 export type PostsOutput = z.infer<typeof postsOutput>;
 

@@ -2,6 +2,9 @@ import { relations } from "drizzle-orm";
 import { integer, pgTable, text,uuid } from "drizzle-orm/pg-core";
 import { number, z } from "zod";
 
+const likesDislikes = ["like", "dislike"] as const;
+export type LikesDislikes = typeof likesDislikes[number];
+
 export const users = pgTable("users",
     {
       id: uuid("id").primaryKey().defaultRandom(),
@@ -19,10 +22,10 @@ export const posts = pgTable("posts", {
   .references(() => users.id),
 })
 
-export const likesDislikes = pgTable("likes_dislikes", {
+export const reactions = pgTable("reactions", {
   id: uuid("id").primaryKey().defaultRandom(),
-  likes: integer("likes").default(0),
-  dislikes: integer("dislikes").default(0),
+  reaction: text("reaction").$type<LikesDislikes>().notNull(),
+  userId: uuid("userId").notNull().references(() => users.id),
   postId: uuid("postId")
   .notNull()
   .references(() => posts.id),
@@ -31,6 +34,7 @@ export const likesDislikes = pgTable("likes_dislikes", {
 export const comments = pgTable("comments", {
   id: uuid("id").primaryKey().defaultRandom(),
   text: text("text").notNull(),
+  userId: uuid("userId").notNull().references(() => users.id),
   postId: uuid("postId")
   .notNull()
   .references(() => posts.id),
@@ -38,6 +42,8 @@ export const comments = pgTable("comments", {
 
 export const usersRelations = relations(users, ({many}) => ({
   posts: many(posts),
+  reactions: many(reactions),
+  comments: many(comments),
 }));
 
 export const postsRelations = relations(posts, ({many, one}) => ({
@@ -45,14 +51,18 @@ export const postsRelations = relations(posts, ({many, one}) => ({
     fields: [posts.userId],
     references: [users.id],
   }),
-  likesDislikes: one(likesDislikes),
+  reactions: many(reactions),
   comments: many(comments),
 }));
 
-export const likesDislikesRelations = relations(likesDislikes, ({one}) => ({
+export const reactionsRelations = relations(reactions, ({one}) => ({
   post: one(posts, {
-    fields: [likesDislikes.postId],
+    fields: [reactions.postId],
     references: [posts.id],
+  }),
+  user: one(users, {
+    fields: [reactions.userId],
+    references: [users.id],
   }),
 }));
 
@@ -60,5 +70,9 @@ export const commentsRelations = relations(comments, ({one}) => ({
   post: one(posts, {
     fields: [comments.postId],
     references: [posts.id],
+  }),
+  user: one(users, {
+    fields: [comments.userId],
+    references: [users.id],
   }),
 }));

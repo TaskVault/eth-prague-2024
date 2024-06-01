@@ -1,7 +1,7 @@
 import { OpenAPIHono, z } from "@hono/zod-openapi";
 import { PostsCreate, postsCreate, postsOutput } from "./schemas";
 import { db } from "db/db";
-import { posts, likesDislikes } from "db/storage.db";
+import { posts, reactions } from "db/storage.db";
 
 const application = new OpenAPIHono();
 
@@ -37,13 +37,6 @@ application.openapi({
     .returning()
     .execute();
 
-    // Create likes / dislikes ratio for the post
-    const likesDislikesData = await db
-    .insert(likesDislikes)
-    .values({postId: post[0].id})
-    .returning()
-    .execute();
-
     return c.json(post[0], 201);
 })
 
@@ -61,7 +54,7 @@ application.openapi({
     }
 }, async (c) => {
     const posts = await db.query.posts.findMany({
-        with: {}
+        with: {reactions: true, comments: true}
     });
 
     return c.json(posts, 200);
