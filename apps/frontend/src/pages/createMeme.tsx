@@ -12,18 +12,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
-import {useCallback, useRef, useState} from "react";
+import {use, useCallback, useRef, useState, useEffect} from "react";
 // Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
 import { useUploadThing } from "@/lib/useUploadThing";
+import { usePosts } from "@/lib/usePosts";
+import { v4 as uuidv4 } from 'uuid';
 
-// TODO: Add Overlay after generate meme to show the generated meme picture + data + button to Submit MEME
 interface iMeme {
   title: string;
   subTitle: string;
   description: string;
   imageUrl?: string;
 }
-const Menu = ({ meme, onClose }: { meme: iMeme; onClose: () => void }) => (
+const Menu = ({ meme, onClose, onSubmitMeme }: { meme: iMeme; onSubmitMeme: () => void; onClose: () => void;  }) => (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
     <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4">
       <button
@@ -49,6 +50,8 @@ const Menu = ({ meme, onClose }: { meme: iMeme; onClose: () => void }) => (
           className=""
           onClick={() => {
             console.log("Submit meme");
+            console.log(meme);
+            onSubmitMeme();
             onClose();
           }}
         >
@@ -138,8 +141,28 @@ export default function Component() {
       subTitle: subTitle,
       description: description,
     });
+    console.log(memeData);
     setShowPopup("loading");
   };
+  const {createPost} = usePosts();
+  const submitPost = async () => {
+    console.log("send post")
+    console.log(memeData)
+      //Hardcoded cuz beginning
+      const newUuid = "766b287e-cf55-4ee0-956b-9b010dc9400e"
+      const res = createPost.mutateAsync({ title: memeData.title, description: memeData.description, image: memeData.imageUrl || "", userId: newUuid })
+      .then( () => {
+      console.log("post sent")
+    }
+    )
+    .catch( (e) => {
+      console.log("error")
+      console.log(e)
+    }
+    )
+    console.log("post sent")
+    console.log(res)
+}
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -204,6 +227,7 @@ export default function Component() {
             imageUrl: fileUrl || "",
           }}
           onClose={() => setShowPopup("no")}
+          onSubmitMeme={() => submitPost()}
         />
       )}
     </div>
