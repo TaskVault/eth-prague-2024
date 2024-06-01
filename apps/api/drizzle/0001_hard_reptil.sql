@@ -1,0 +1,1 @@
+ALTER TABLE "reactions" ADD CONSTRAINT "reactions_postId_unique" UNIQUE("postId");

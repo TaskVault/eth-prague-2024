@@ -18,7 +18,7 @@ app.doc("/doc", {
 app.get("/ui", swaggerUI({ url: "/doc" }));
 
 export default {
-  port: 3000,
+  port: 3001,
   fetch: app.fetch,
 };
 migrateDB().then(() => {
