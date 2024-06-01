@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { useState } from "react";
+import { JSX, SVGProps, useState } from "react";
 
 const Home: NextPage = () => {
   interface Meme {
@@ -20,6 +20,8 @@ const Home: NextPage = () => {
     { id: 4, title: "Ethereum Meme", imgSrc: "/placeholder.svg", votes: 14 },
     { id: 5, title: "Solana Meme", imgSrc: "/placeholder.svg", votes: 9 },
     { id: 6, title: "Bored Ape Meme", imgSrc: "/placeholder.svg", votes: 6 },
+    { id: 7, title: "1 Meme", imgSrc: "/placeholder.svg", votes: 5 },
+    { id: 8, title: "Daniel Stinkt", imgSrc: "/placeholder.svg", votes: 192 },
   ];
   const [menu, setMenu] = useState<{ visible: boolean; id: number | null }>({
     visible: false,
@@ -82,10 +84,10 @@ const Home: NextPage = () => {
     <div className="w-full max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 sm:text-4xl">
-          Web3 Meme Collection
+          Degens for Future
         </h1>
         <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-          Explore our collection of the best Web3 memes.
+          Ape around and do something gud
         </p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -132,7 +134,7 @@ const Home: NextPage = () => {
 
 export default Home;
 
-function ArrowDownIcon(props) {
+function ArrowDownIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -152,7 +154,7 @@ function ArrowDownIcon(props) {
   );
 }
 
-function ArrowUpIcon(props) {
+function ArrowUpIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
