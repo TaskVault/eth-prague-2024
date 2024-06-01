@@ -60,7 +60,5 @@ contract TokenSubmissionTest is Test, Deployers {
         tokenSubmission.contributeAndVote(0, 1 * 10 ** 18);
 
         tokenSubmission.createTokenAndAddLiquidity(address(manager), address(0), modifyLiquidityRouter, swapRouter);
-
-        // assertEq(tokenSubmission.targetAmount, 1000);
     }
 }
