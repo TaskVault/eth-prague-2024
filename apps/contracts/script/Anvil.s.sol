@@ -51,9 +51,9 @@ contract CounterScript is Script {
         vm.stopBroadcast();
 
         // test the lifecycle (create pool, add liquidity, swap)
-        vm.startBroadcast();
-        testLifecycle(manager, address(counter), lpRouter, swapRouter);
-        vm.stopBroadcast();
+        // vm.startBroadcast();
+        // testLifecycle(manager, address(counter), lpRouter, swapRouter);
+        // vm.stopBroadcast();
     }
 
     // -----------------------------------------------------------
@@ -84,49 +84,49 @@ contract CounterScript is Script {
         }
     }
 
-    function testLifecycle(
-        IPoolManager manager,
-        address hook,
-        PoolModifyLiquidityTest lpRouter,
-        PoolSwapTest swapRouter
-    ) internal {
-        (MockERC20 token0, MockERC20 token1) = deployTokens();
-        token0.mint(msg.sender, 100_000 ether);
-        token1.mint(msg.sender, 100_000 ether);
+    // function testLifecycle(
+    //     IPoolManager manager,
+    //     address hook,
+    //     PoolModifyLiquidityTest lpRouter,
+    //     PoolSwapTest swapRouter
+    // ) internal {
+    //     (MockERC20 token0, MockERC20 token1) = deployTokens();
+    //     token0.mint(msg.sender, 100_000 ether);
+    //     token1.mint(msg.sender, 100_000 ether);
 
-        bytes memory ZERO_BYTES = new bytes(0);
+    //     bytes memory ZERO_BYTES = new bytes(0);
 
-        // initialize the pool
-        int24 tickSpacing = 60;
-        PoolKey memory poolKey =
-            PoolKey(Currency.wrap(address(token0)), Currency.wrap(address(token1)), 3000, tickSpacing, IHooks(hook));
-        manager.initialize(poolKey, Constants.SQRT_PRICE_1_1, ZERO_BYTES);
+    //     // initialize the pool
+    //     int24 tickSpacing = 60;
+    //     PoolKey memory poolKey =
+    //         PoolKey(Currency.wrap(address(token0)), Currency.wrap(address(token1)), 3000, tickSpacing, IHooks(hook));
+    //     manager.initialize(poolKey, Constants.SQRT_PRICE_1_1, ZERO_BYTES);
 
-        // approve the tokens to the routers
-        token0.approve(address(lpRouter), type(uint256).max);
-        token1.approve(address(lpRouter), type(uint256).max);
-        token0.approve(address(swapRouter), type(uint256).max);
-        token1.approve(address(swapRouter), type(uint256).max);
+    //     // approve the tokens to the routers
+    //     token0.approve(address(lpRouter), type(uint256).max);
+    //     token1.approve(address(lpRouter), type(uint256).max);
+    //     token0.approve(address(swapRouter), type(uint256).max);
+    //     token1.approve(address(swapRouter), type(uint256).max);
 
-        // add full range liquidity to the pool
-        lpRouter.modifyLiquidity(
-            poolKey,
-            IPoolManager.ModifyLiquidityParams(
-                TickMath.minUsableTick(tickSpacing), TickMath.maxUsableTick(tickSpacing), 100 ether, 0
-            ),
-            ZERO_BYTES
-        );
+    //     // add full range liquidity to the pool
+    //     lpRouter.modifyLiquidity(
+    //         poolKey,
+    //         IPoolManager.ModifyLiquidityParams(
+    //             TickMath.minUsableTick(tickSpacing), TickMath.maxUsableTick(tickSpacing), 100 ether, 0
+    //         ),
+    //         ZERO_BYTES
+    //     );
 
-        // swap some tokens
-        bool zeroForOne = true;
-        int256 amountSpecified = 1 ether;
-        IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
-            zeroForOne: zeroForOne,
-            amountSpecified: amountSpecified,
-            sqrtPriceLimitX96: zeroForOne ? TickMath.MIN_SQRT_PRICE + 1 : TickMath.MAX_SQRT_PRICE - 1 // unlimited impact
-        });
-        PoolSwapTest.TestSettings memory testSettings =
-            PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false});
-        swapRouter.swap(poolKey, params, testSettings, ZERO_BYTES);
-    }
+    //     // swap some tokens
+    //     bool zeroForOne = true;
+    //     int256 amountSpecified = 1 ether;
+    //     IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
+    //         zeroForOne: zeroForOne,
+    //         amountSpecified: amountSpecified,
+    //         sqrtPriceLimitX96: zeroForOne ? TickMath.MIN_SQRT_PRICE + 1 : TickMath.MAX_SQRT_PRICE - 1 // unlimited impact
+    //     });
+    //     PoolSwapTest.TestSettings memory testSettings =
+    //         PoolSwapTest.TestSettings({takeClaims: false, settleUsingBurn: false});
+    //     swapRouter.swap(poolKey, params, testSettings, ZERO_BYTES);
+    // }
 }

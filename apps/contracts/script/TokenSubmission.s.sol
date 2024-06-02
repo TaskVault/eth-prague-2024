@@ -6,7 +6,7 @@ import {TokenSubmission} from "../src/TokenSubmission.sol";
 
 // Configuring for  ETH Sepolia
 contract TokenSubmissionScript is Script {
-    address constant WETH_ADDRESS = address(0x4458c2dB566Ae8a30625de55fEa1231D27238A0C);
+    address constant WETH_ADDRESS = address(0x5FbDB2315678afecb367f032d93F642f64180aa3);
     uint256 constant WETH_TARGET_AMOUNT = 5 ether;
 
     function setUp() public {}

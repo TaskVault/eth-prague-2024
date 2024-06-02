@@ -51,7 +51,7 @@ contract TokenSubmission {
         tokenIdeas[_ideaIndex].votes += amount;
     }
 
-    function createTokenAndAddLiquidity(address manager, PoolModifyLiquidityTest poolModifyLiqTest, PoolSwapTest poolSwapTest) external {
+    function createTokenAndAddLiquidity(address manager, IHooks hook, PoolModifyLiquidityTest poolModifyLiqTest, PoolSwapTest poolSwapTest) external {
         require(totalCollected >= targetAmount, "Target not met");
 
         // Token creation
@@ -75,8 +75,9 @@ contract TokenSubmission {
         // initialize the pool
         int24 tickSpacing = 60;
         bytes memory ZERO_BYTES = new bytes(0);
+
         PoolKey memory poolKey =
-            PoolKey(Currency.wrap(address(newToken)), Currency.wrap(WETH), 3000, tickSpacing, IHooks(Constants.ADDRESS_ZERO));
+            PoolKey(Currency.wrap(address(newToken)), Currency.wrap(WETH), 3000, tickSpacing, hook);
         IPoolManager(manager).initialize(poolKey, Constants.SQRT_PRICE_1_1, ZERO_BYTES);
 
         // add full range liquidity to the pool
@@ -85,8 +86,6 @@ contract TokenSubmission {
              IPoolManager.ModifyLiquidityParams(-60, 60, 1000, 0),
              ZERO_BYTES
          );
-
-        payable(owner).transfer(address(this).balance);
     }
 
     function getWinningIdea() internal view returns (TokenIdea memory) {
