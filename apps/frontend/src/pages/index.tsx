@@ -3,11 +3,25 @@ import { Card, CardContent } from "@/components/ui/card";
 import { usePosts } from "@/lib/usePosts";
 import { iMeme } from "./createMeme";
 import {TestChain} from "@/components/test-chain";
+import {useAccount} from "wagmi";
+import {useGetUser, useUserCreate} from "@/lib/useUserCreate";
+import {Button} from "@/components/ui/button";
+import { useTokenSubmission } from "@/lib/eth/useTokenSubmission";
 
 const Home = () => {
   const [menu, setMenu] = useState<{ visible: boolean; id?: string | number }>({
     visible: false,
   });
+  const {address} = useAccount();
+  const user = useGetUser({
+    wallet: address
+  })
+  useEffect(() => {
+    console.log("User", {
+      api: user.data,
+      account: address
+    });
+  }, []);
   const [selectedMeme, setSelectedMeme] = useState<iMeme>();
   const handleDBCardClick = (id: string) => {
     console.log(posts.data);
@@ -52,22 +66,25 @@ const Home = () => {
   const Menu = ({ meme, onClose }: { meme: iMeme; onClose: () => void }) => {
     const likePostAction = async (postId: string,) => {
       // Commentor ID hardcoded
-      const userId = "766b287e-cf55-4ee0-956b-9b010dc9400e";
       const res = await likePost.mutateAsync({
-        postId,
-        userId,
+        postId: postId,
       });
       console.log(res);
     };
     const dislikePostAction = async (postId: string) => {
       // Commentor ID hardcoded
-      const userId = "766b287e-cf55-4ee0-956b-9b010dc9400e";
       const res = await dislikePost.mutateAsync({
         postId,
-        userId,
       });
       console.log(res);
     }
+
+    const {contributeAndVote} = useTokenSubmission();
+
+    const handleContributeAndVote = async () => {
+      await contributeAndVote.mutateAsync();
+    }
+
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
         <div className="relative bg-white dark:bg-gray-900 rounded-lg shadow-lg p-4 m-4">
@@ -104,6 +121,10 @@ const Home = () => {
               <button className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300">
                 <ArrowDownIcon onClick={() => dislikePostAction(meme.id ?? "")} className="w-5 h-5" />
               </button>
+
+              <Button onClick={handleContributeAndVote}>
+                Provide Liquidity
+              </Button>
             </div>
           </div>
         </div>

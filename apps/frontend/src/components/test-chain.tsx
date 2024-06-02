@@ -16,13 +16,16 @@ export const TestChain = () => {
 
     const handleClick = async () => {
         // submit token
-        // const result = await submitToken.mutateAsync();
-        // console.log("Submitted token", result);
+         // const result = await submitToken.mutateAsync({
+         //        name: "Test Token",
+         //        description: "This is a test token"
+         // });
+         // console.log("Submitted token", result);
 
         // contribute and vote
-        const result2 = await contributeAndVote.mutateAsync();
+         // const result2 = await contributeAndVote.mutateAsync();
 
-        console.log("Contribute and vote", result2);
+         // console.log("Contribute and vote", result2);
 
         const result3 = await createTokenAndAddLiquidity.mutateAsync();
         console.log("Create token and add liquidity", result3);

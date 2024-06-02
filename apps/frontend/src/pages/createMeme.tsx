@@ -8,7 +8,7 @@ import { use, useCallback, useRef, useState, useEffect } from "react";
 // Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
 import { useUploadThing } from "@/lib/useUploadThing";
 import { usePosts } from "@/lib/usePosts";
-import { v4 as uuidv4 } from "uuid";
+import {useAccount} from "wagmi";
 
 export interface iMeme {
   title: string;
@@ -132,6 +132,7 @@ export default function Component() {
   };
 
   const { createPost } = usePosts();
+  const {address} = useAccount()
   const submitPost = async () => {
     //Hardcoded cuz beginning
     const newUuid = "766b287e-cf55-4ee0-956b-9b010dc9400e";
@@ -140,7 +141,6 @@ export default function Component() {
         title: memeData.title,
         description: memeData.description,
         image: memeData.imageUrl || "",
-        userId: newUuid,
       })
       .then((r) => {
         console.log("post sent");
