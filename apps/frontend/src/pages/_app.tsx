@@ -11,6 +11,7 @@ import {
   optimism,
   polygon,
   sepolia,
+    anvil
 } from "wagmi/chains";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 
@@ -18,6 +19,7 @@ const config = getDefaultConfig({
   appName: "RainbowKit App",
   projectId: "YOUR_PROJECT_ID",
   chains: [
+    anvil,
     mainnet,
     polygon,
     optimism,

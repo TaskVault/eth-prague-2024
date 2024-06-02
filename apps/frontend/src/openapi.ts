@@ -9,7 +9,7 @@ export default {
     "parameters": {}
   },
   "paths": {
-    "/posts/{userId}": {
+    "/posts/{wallet}": {
       "post": {
         "parameters": [
           {
@@ -17,7 +17,7 @@ export default {
               "type": "string"
             },
             "required": true,
-            "name": "userId",
+            "name": "wallet",
             "in": "path"
           }
         ],
@@ -109,6 +109,24 @@ export default {
                     "likes",
                     "dislikes",
                     "comments"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
                   ]
                 }
               }
@@ -278,7 +296,7 @@ export default {
         }
       }
     },
-    "/posts/{postId}/reactions/{userId}": {
+    "/posts/{postId}/reactions/{wallet}": {
       "put": {
         "parameters": [
           {
@@ -294,7 +312,7 @@ export default {
               "type": "string"
             },
             "required": true,
-            "name": "userId",
+            "name": "wallet",
             "in": "path"
           }
         ],

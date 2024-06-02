@@ -8,7 +8,7 @@ const application = new OpenAPIHono();
 
 application.openapi({
     method: "post",
-    path: "/posts/{userId}",
+    path: "/posts/{wallet}",
     request: {
         body: {
             content: {
@@ -16,7 +16,7 @@ application.openapi({
               },
         },
         params: z.object({
-            userId: z.string()
+            wallet: z.string()
         })
     },
     responses: {
@@ -25,16 +25,39 @@ application.openapi({
                 "application/json": {schema: postsOutput}
             },
             description: "Created post",
+        },
+        404: {
+            content: {
+                "application/json": {schema: z.object({error: z.string()})}
+            },
+            description: "User not found",
         }
     }
 }, async (c) => {
-    const { userId } = c.req.valid("param");
+    const { wallet } = c.req.valid("param");
     const { title, description, image } = await c.req.json<PostsCreate>();
+    console.log("wallet", wallet);
+    const parsed = wallet.toLowerCase();
+    console.log("wallet", parsed);
+    let user = await db.query.users.findFirst({
+        where: eq(users.wallet, parsed)
+    }).execute();
+
+    if (!user) {
+       // create user
+        const usersq = await db
+        .insert(users)
+        .values({ wallet: parsed })
+        .returning()
+
+        user = usersq[0];
+
+    }
 
     // Create a post
     const post = await db
     .insert(posts)
-    .values({title, description, image, userId})
+    .values({title, description, image, userId: user.id})
     .returning()
     .execute();
 
@@ -123,7 +146,7 @@ application.openapi({
 
 application.openapi({
     method: "put",
-    path: "/posts/{postId}/reactions/{userId}",
+    path: "/posts/{postId}/reactions/{wallet}",
     request: {
         body: {
             content: {
@@ -132,7 +155,7 @@ application.openapi({
         },
         params: z.object({
             postId: z.string(),
-            userId: z.string(),
+            wallet: z.string(),
         })
     },
     responses: {
@@ -141,19 +164,34 @@ application.openapi({
         }
     }
 }, async (c) => {
-    const { postId, userId } = c.req.valid("param");
+    const { postId, wallet } = c.req.valid("param");
     const reaction = await c.req.json<ReactionsUpsert>();
+
+    let user = await db.query.users.findFirst({
+        where: eq(users.wallet, wallet.toLowerCase())
+    }).execute();
+
+    if (!user) {
+        // create user
+        const usersq = await db
+            .insert(users)
+            .values({ wallet: wallet.toLowerCase() })
+            .returning()
+
+        user = usersq[0];
+
+    }
 
     const updateResult = await db
         .update(reactions)
         .set({ reaction: reaction.reaction })
-        .where(and(eq(reactions.postId, postId), eq(reactions.userId, userId)))
+        .where(and(eq(reactions.postId, postId), eq(reactions.userId, user.id)))
         .execute();
 
     if (updateResult.rowCount === 0) {
         await db
         .insert(reactions)
-        .values({ postId, userId, reaction: reaction.reaction })
+        .values({ postId, userId: user.id, reaction: reaction.reaction })
         .execute();
     }
 
@@ -199,7 +237,7 @@ application.openapi({
             content: {
                 "application/json": { schema: usersCreate }
             }
-        }   
+        }
     },
     responses: {
         201: {
@@ -227,7 +265,7 @@ application.openapi({
     request: {
         params: z.object({
             wallet: z.string()
-        })   
+        })
     },
     responses: {
         200: {
@@ -245,6 +283,8 @@ application.openapi({
         with: {posts: true, reactions: true, comments: true},
 
     });
+
+    console.log("found user", users);
 
     return c.json(users, 200);
 });
