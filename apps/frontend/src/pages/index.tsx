@@ -2,7 +2,7 @@ import { JSX, SVGProps, useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePosts } from "@/lib/usePosts";
 import { iMeme } from "./createMeme";
-import { v4 as uuidv4 } from "uuid";
+import {TestChain} from "@/components/test-chain";
 
 const Home = () => {
   const [menu, setMenu] = useState<{ visible: boolean; id?: string | number }>({
@@ -113,6 +113,7 @@ const Home = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <TestChain/>
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 sm:text-4xl">
           Degens for Future
