@@ -40,6 +40,7 @@ contract TokenSubmissionTest is Test, Deployers {
         // create the token submission contract
         tokenSubmission = new TokenSubmission(3 * 10 ** 18, address(WETH));
 
+        assertEq(tokenSubmission.owner(), vm.address(1));
         // Approve the TokenSubmission contract to spend WETH
         WETH.approve(address(tokenSubmission), 20 * 10 ** 18);
 
@@ -59,6 +60,9 @@ contract TokenSubmissionTest is Test, Deployers {
         tokenSubmission.contributeAndVote(0, 1 * 10 ** 18);
         tokenSubmission.contributeAndVote(0, 1 * 10 ** 18);
 
-        tokenSubmission.createTokenAndAddLiquidity(address(manager), address(0), modifyLiquidityRouter, swapRouter);
+        tokenSubmission.createTokenAndAddLiquidity(address(manager), modifyLiquidityRouter, swapRouter);
+
+        assertEq(tokenSubmission.totalCollected(), uint256(4 * 10 ** 18));
+        assertEq
     }
 }
