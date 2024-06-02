@@ -49,7 +49,11 @@ export const usePosts = () => {
   });
 
   const commentPost = useMutation({
-    mutationFn: async (variables: { postId: string; userId: string; comment: string }) => {
+    mutationFn: async (variables: {
+      postId: string;
+      userId: string;
+      comment: string;
+    }) => {
       const res = apiClient[`/posts/{postId}/comments/{userId}`].post({
         params: { postId: variables.postId, userId: variables.userId },
         json: {
@@ -59,6 +63,35 @@ export const usePosts = () => {
       return res.json();
     },
   });
+
+  const createUser = useMutation({
+    mutationFn: async (variables: { wallet: string }) => {
+      const res = apiClient["/users"].post({
+        json: {
+          wallet: variables.wallet,
+        },
+      });
+      return res.json();
+    },
+  });
+
+  /*const getUsers = useMutation({
+    mutationFn: async (variables: {wallet: string}) => {
+      const res = apiClient["/users/{wallet}"].get({
+        params: { wallet: variables.wallet },
+      });}
+      );
+      
+    },
+  });*/
+  const getUsers = useMutation ({
+    mutationFn: async (variables: {wallet: string}) => {
+        const res = apiClient["/users/{wallet}"].get({
+            params: { wallet: variables.wallet },
+        });
+        return res.json();
+    }
+  })
 
   const posts = useQuery({
     queryKey: ["post"],
@@ -74,5 +107,7 @@ export const usePosts = () => {
     likePost,
     dislikePost,
     commentPost,
+    createUser,
+    getUsers,
   };
 };

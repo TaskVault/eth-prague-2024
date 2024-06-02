@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Button } from "../components/ui/button";
 import {
@@ -10,8 +10,30 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { createPublicClient, createWalletClient, custom, http } from "viem";
+import { base } from "viem/chains";
+import { usePosts } from "@/lib/usePosts";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [account, setAccount] = useState<string>("");
+  const initializeAccount = async () => {
+    const [account] = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    const client = createWalletClient({
+      account,
+      chain: base,
+      transport: custom(window.ethereum),
+    });
+    console.log(client.account);
+    setAccount(client.account);
+  };
+
+  // initializeAccount() on page load
+  useEffect(() => {
+    initializeAccount();
+  }, []);
+
   return (
     <div>
       <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
